@@ -1,27 +1,9 @@
-from connection.connection import ConnectionDB
-
-
 class Item:
-    def __init__(self, id: int, name: str, quantity: int, price):
+    def __init__(self, id, name, quantity, price):
         self.id = id
         self.name = name
         self.quantity = quantity
         self.price = price
-
-    @staticmethod
-    def log_stock_change(item_id, action, old_quantity, new_quantity):
-        try:
-            ConnectionDB.execute_query(f"""INSERT INTO logs (item_id, action, old_quantity, new_quantity)
-        VALUES ({item_id}, {action}, {old_quantity}, {new_quantity});""").close()
-            print("Logged successfully")
-        except Exception as e:
-            print("ERROR", e)
-
-    def update_stock(self, change):
-        old_quantity = self.quantity
-        self.quantity += change
-        action = 'Update Stock'
-        self.log_stock_change(self.id, action, old_quantity, self.quantity)
 
     def get_info(self):
         return {
@@ -43,6 +25,11 @@ class PhysicalItem(Item):
         info.update({"weight": self.weight, "dimensions": self.dimensions})
         return info
 
+    # def update_stock(self, change):
+    #     old_quantity = self.quantity
+    #     self.quantity += change
+    #     self.log_stock_change(self.id, 'Update Stock', old_quantity, self.quantity)
+
 
 class DigitalItem(Item):
     def __init__(self, id, name, quantity, price, file_size, download_link: str):
@@ -54,3 +41,8 @@ class DigitalItem(Item):
         info = super().get_info()
         info.update({"file_size": self.file_size, "download_link": self.download_link})
         return info
+
+    # def update_stock(self, change):
+    #     old_quantity = self.quantity
+    #     self.quantity += change
+    #     self.log_stock_change(self.id, 'Update Stock', old_quantity, self.quantity)
