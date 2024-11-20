@@ -18,20 +18,3 @@ class ConnectionDB:
         cursor = ConnectionDB.connect_db().cursor()
         cursor.execute(query)
         return cursor
-
-    @staticmethod
-    def close_fetch_all():
-        cursor = ConnectionDB.connect_db()
-        cursor.fetchall()
-        return cursor.close()
-
-    @staticmethod
-    def close_fetch_one():
-        cursor = ConnectionDB.connect_db()
-        cursor.fetchone()
-        return cursor.close()
-
-    @staticmethod
-    def close_db():
-        cursor = ConnectionDB.connect_db()
-        return cursor.close()
