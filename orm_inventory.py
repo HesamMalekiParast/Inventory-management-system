@@ -29,7 +29,7 @@ class Inventory:
             physical = 'Physical'
             ConnectionDB.execute_query(f"""
             INSERT INTO inventory (id, name, quantity, price, type, weight, dimensions)
-            VALUES ({item.id}, {item.name}, {item.quantity}, {item.price}, {physical}, {item.weight}, {item.dimensions});
+            VALUES ({item.id}, '{item.name}', {item.quantity}, {item.price}, '{physical}', {item.weight}, '{item.dimensions}');
             """).close()
             print(f"Item inserted successfully")
         except Exception as e:
@@ -40,17 +40,29 @@ class Inventory:
         try:
             digital = 'Digital'
             ConnectionDB.execute_query(f"""INSERT INTO inventory (id, name, quantity, price, type, file_size, download_link)
-            VALUES ({item.id}, {item.name}, {item.quantity}, {item.price}, {digital}, {item.file_size}, {item.download_link});
+            VALUES ({item.id}, '{item.name}', {item.quantity}, {item.price}, '{digital}', {item.file_size}, '{item.download_link}');
             """).close()
             print(f"Item inserted successfully")
         except Exception as e:
             print("ERROR", e)
 
     @staticmethod
-    def update_stock(id, new_quantity):
+    def __log_stock_change(item_id, action, old_quantity, new_quantity):
         try:
-            ConnectionDB.execute_query(f"""UPDATE inventory SET quantity = {id} WHERE id = {new_quantity};""").close()
+            ConnectionDB.execute_query(f"""INSERT INTO logs (item_id, action, old_quantity, new_quantity)
+            VALUES ({item_id}, '{action}', {old_quantity}, {new_quantity});""").close()
+            print("Logged successfully")
+        except Exception as e:
+            print("ERROR", e)
+
+    @classmethod
+    def update_stock(cls, id, new_quantity):
+        try:
+            old_quantity = ConnectionDB.execute_query(f"""SELECT quantity FROM inventory WHERE id = {id}""").fetchone()[0]
+            ConnectionDB.execute_query(f"""UPDATE inventory SET quantity = {new_quantity} WHERE id = {id};""").close()
             print(f"Updated ({id}) stock with new quantity ({new_quantity}) successfully")
+            cls.__log_stock_change(id,'Update Stock', old_quantity, new_quantity)
+
         except Exception as e:
             print("ERROR", e)
 
@@ -100,7 +112,7 @@ class Inventory:
     @staticmethod
     def update_price(id, new_price):
         try:
-            ConnectionDB.execute_query(f"""UPDATE inventory SET price = {id} WHERE id = {new_price};""").close()
+            ConnectionDB.execute_query(f"""UPDATE inventory SET price = {new_price} WHERE id = {id};""").close()
             print(f"Item ({id}) price updated with new price ({new_price}) successfully ")
         except Exception as e:
             print("ERROR", e)
@@ -121,14 +133,16 @@ class Inventory:
 
 
 if __name__ == "__main__":
-    Inventory.create_table()
+    # Inventory.create_table()
     physical_item = PhysicalItem(1, 'Table', 5, 150.00, 20.5, '120x60x75')
     digital_item = DigitalItem(2, 'Ebook', 50, 15.99, 2.5, 'https://example.com/ebook')
+    # #
+    # #
+    # Inventory.insert_item_physical(physical_item)
+    # Inventory.insert_item_digital(digital_item)
 
-    Inventory.insert_item_physical(physical_item)
-    Inventory.insert_item_digital(digital_item)
-
-    # physical_item.update_stock(10)
-    # digital_item.update_stock(-5)
-
-    print(Inventory.retrieve_all_logs())
+    Inventory.update_stock(1,70)
+    Inventory.update_price(1,200)
+    #
+    # print(Inventory.retrieve_all_logs())
+    # Inventory.delete_item_by_id(2)
