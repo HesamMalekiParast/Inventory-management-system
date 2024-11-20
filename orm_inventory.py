@@ -1,4 +1,4 @@
-from connection.connection import ConnectionDB
+from connection import ConnectionDB
 from items import PhysicalItem, DigitalItem
 
 
@@ -136,13 +136,13 @@ if __name__ == "__main__":
     # Inventory.create_table()
     physical_item = PhysicalItem(1, 'Table', 5, 150.00, 20.5, '120x60x75')
     digital_item = DigitalItem(2, 'Ebook', 50, 15.99, 2.5, 'https://example.com/ebook')
-    # #
-    # #
-    # Inventory.insert_item_physical(physical_item)
-    # Inventory.insert_item_digital(digital_item)
-
-    Inventory.update_stock(1,70)
-    Inventory.update_price(1,200)
+    # # #
+    # # #
+    # # Inventory.insert_item_physical(physical_item)
+    # # Inventory.insert_item_digital(digital_item)
+    #
+    # Inventory.update_stock(1,70)
+    # Inventory.update_price(1,200)
     #
     # print(Inventory.retrieve_all_logs())
     # Inventory.delete_item_by_id(2)
